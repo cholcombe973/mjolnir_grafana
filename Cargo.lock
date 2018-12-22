@@ -66,7 +66,7 @@ dependencies = [
 [[package]]
 name = "mjolnir-api"
 version = "0.2.0"
-source = "git+https://github.com/ChrisMacNaughton/Mjolnir.git#27b99b57ac264eea5a12b137214f4c9b604acbc9"
+source = "git+https://github.com/ChrisMacNaughton/Mjolnir.git#3753e53b14de3d3f0e00da808085a93dfe090095"
 dependencies = [
  "protobuf 1.7.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "protoc 1.7.4 (registry+https://github.com/rust-lang/crates.io-index)",
