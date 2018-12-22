@@ -95,19 +95,19 @@ fn list_plugins() -> HashMap<String, fn(HashMap<String, String>) -> RemediationR
 // Your plugins should be functions with this signature
 fn grafana(args: HashMap<String, String>) -> RemediationResult {
     let body: String = if let Some(body) = args.get("body") {
-        if body.len() > 0 {
+        if !body.is_empty() {
             body.clone()
         } else {
-            return RemediationResult::new().err(format!("Empty Body"));
+            return RemediationResult::new().err("Empty Body".to_string());
         }
     } else {
-        return RemediationResult::new().err(format!("Missing required argument: Body"));
+        return RemediationResult::new().err("Missing required argument: Body".to_string());
     };
     let incoming: Incoming = match serde_json::from_str(&body) {
         Ok(a) => a,
         Err(e) => return RemediationResult::new().err(format!("Failed to parse json: {:?}", e)),
     };
-    let mut alert = Alert::new("alertmanager");
+    let mut alert = Alert::new("grafana");
     alert = alert.with_arg(format!("raw={:?}", incoming));
     alert = alert.with_name(incoming.title);
     alert = alert.with_arg(format!("state={:?}", incoming.state));
@@ -139,7 +139,7 @@ fn main() {
 
     let res = f(arg_list);
 
-    io::stdout().write(&res.write_to_bytes().unwrap()).unwrap();
+    io::stdout().write_all(&res.write_to_bytes().unwrap()).unwrap();
 }
 
 fn get_args() -> HashMap<String, String> {
@@ -147,21 +147,21 @@ fn get_args() -> HashMap<String, String> {
     if args.len() == 1 {
         // This is the usage directions to Mjolnir
         io::stdout()
-            .write(&generate_usage().write_to_bytes().unwrap())
+            .write_all(&generate_usage().write_to_bytes().unwrap())
             .unwrap();
         process::exit(0);
     } else {
         let mut arg_list: HashMap<String, String> = HashMap::new();
         let _ = args.next();
         for arg in args {
-            let mut parts = arg.split("=");
+            let mut parts = arg.split('=');
             let name = parts.next().unwrap().replace("--", "");
             let mut value = parts.next();
             if value.is_none() {
                 value = Some("");
             }
-            arg_list.insert(name.into(), value.unwrap().into());
+            arg_list.insert(name, value.unwrap().into());
         }
-        return arg_list;
+        arg_list
     }
 }
