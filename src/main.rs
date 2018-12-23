@@ -39,7 +39,7 @@ mod tests {
 #[serde(rename_all = "snake_case")]
 struct Eval {
     metric: String,
-    tags: Value,
+    tags: Option<Value>,
     value: Value,
 }
 
@@ -111,6 +111,9 @@ fn grafana(args: HashMap<String, String>) -> RemediationResult {
     alert = alert.with_arg(format!("raw={:?}", incoming));
     alert = alert.with_name(incoming.title);
     alert = alert.with_arg(format!("state={:?}", incoming.state));
+    alert = alert.with_arg(format!("message={}", incoming.message));
+    alert = alert.with_arg(format!("rule_name={}", incoming.rule_name));
+    alert = alert.with_arg(format!("rule_id={}", incoming.rule_id));
     for e in &incoming.eval_matches {
         alert = alert.with_arg(format!("{}={}", e.metric, e.value));
     }
